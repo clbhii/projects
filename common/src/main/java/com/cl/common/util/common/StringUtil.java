@@ -1,4 +1,4 @@
-package com.cl.common.util;
+package com.cl.common.util.common;
 
 /**
  * by cl at 2020/5/18 0018

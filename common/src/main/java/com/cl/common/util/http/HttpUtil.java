@@ -1,6 +1,6 @@
-package com.cl.common.util;
+package com.cl.common.util.http;
 
-import org.apache.commons.codec.binary.StringUtils;
+import com.cl.common.util.common.StringUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
