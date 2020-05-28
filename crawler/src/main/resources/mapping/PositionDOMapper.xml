@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cl.crawler.dao.PositionDAO" >
+  <resultMap id="BaseResultMap" type="com.cl.crawler.model.PositionDO" >
+    <id column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="out_id" property="outId" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="detail_url" property="detailUrl" jdbcType="VARCHAR" />
+    <result column="date_publish" property="datePublish" jdbcType="DATE" />
+    <result column="date_create" property="dateCreate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    uid, out_id, title, detail_url, date_publish, date_create
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from cl_position
+    where uid = #{uid,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByOutId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from cl_position
+    where out_id = #{outId,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insert" parameterType="com.cl.crawler.model.PositionDO" >
+    insert into cl_position (uid, out_id, title, 
+      detail_url, date_publish, date_create
+      )
+    values (#{uid,jdbcType=VARCHAR}, #{outId,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{detailUrl,jdbcType=VARCHAR}, #{datePublish,jdbcType=DATE}, #{dateCreate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+
+</mapper>
