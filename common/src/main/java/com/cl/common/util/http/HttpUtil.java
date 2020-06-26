@@ -17,6 +17,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
@@ -91,8 +92,12 @@ public class HttpUtil {
         StringBuilder urlBuilder = new StringBuilder(url);
         if (paramsMap != null) {
             urlBuilder.append("?");
-            for (Entry<String, String> entry : paramsMap.entrySet()) {
-                urlBuilder.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            try{
+                for (Entry<String, String> entry : paramsMap.entrySet()) {
+                    urlBuilder.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), "UTF-8")).append("&");
+                }
+            }catch (Exception e) {
+                throw new RuntimeException("url编码失败:" + urlBuilder.toString(), e);
             }
             if (paramsMap.size() > 0) {
                 urlBuilder.deleteCharAt(urlBuilder.length()-1);
