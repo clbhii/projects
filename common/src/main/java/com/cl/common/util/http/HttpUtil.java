@@ -1,6 +1,9 @@
 package com.cl.common.util.http;
 
 import com.cl.common.util.common.StringUtil;
+import com.cl.common.util.json.JacksonBuilder;
+import com.cl.common.util.json.JacksonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -11,6 +14,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -32,6 +36,7 @@ import java.util.stream.Collectors;
 
 public class HttpUtil {
 
+    private static ObjectMapper objectMapper = new JacksonBuilder().build();
     private HttpUtil() {
 
     }
@@ -167,17 +172,54 @@ public class HttpUtil {
 
         return body;
     }
-    
+
+
+    public static String postJSON(String url, Map<String, String> headMap, Map<String, String> paramsMap) {
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpPost post = new HttpPost(url);
+        // head
+        if (headMap != null) {
+            for (Entry<String, String> entry : headMap.entrySet()) {
+                post.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+        // params
+        StringEntity entity = new StringEntity(JacksonUtils.objectToJson(objectMapper, paramsMap), Charset.forName("UTF-8"));
+        entity.setContentType("application/json;charset=UTF-8");
+        post.setEntity(entity);
+
+        // 发送请求
+        String body = null;
+        try {
+            HttpResponse httpResponse = httpClient.execute(post);
+            HttpEntity respEntity = httpResponse.getEntity();
+            body = EntityUtils.toString(respEntity);
+//            log.info(requestLog.append(";res:").append(body).toString());
+            return body;
+        } catch (Exception e) {
+            throw new RuntimeException("访问http失败:" + url, e);
+        }
+    }
     
     public static void main(String[] args) {
-    	String url = "http://www.xicidaili.com/nn/1";
-        HashMap<String, String> headMap = new HashMap<>();
-        HashMap<String, String> dataMap = new HashMap<>();
-        headMap.put("Host", "www.xicidaili.com");
-        headMap.put("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
-                "(KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+//    	String url = "http://www.xicidaili.com/nn/1";
+//        HashMap<String, String> headMap = new HashMap<>();
+//        HashMap<String, String> dataMap = new HashMap<>();
+//        headMap.put("Host", "www.xicidaili.com");
+//        headMap.put("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
+//                "(KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+////        String html = HttpUtil.get(url, headMap, dataMap);
+//        String html = HttpUtil.get(url, "111.229.224.145", 8118, headMap, dataMap);
+//    	System.out.println(html);
+
+        String url = "http://quickapitest.wyn88.com:8080/Channel/Auth";
+        Map<String, String> headMap = new HashMap<>();
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("sid", "CHN821");
+        dataMap.put("api_key", "testapi");
+        dataMap.put("api_secret", "testapi");
 //        String html = HttpUtil.get(url, headMap, dataMap);
-        String html = HttpUtil.get(url, "111.229.224.145", 8118, headMap, dataMap);
-    	System.out.println(html);
+        String html = HttpUtil.get(url, headMap, dataMap);
+        System.out.println(html);
     }
 }
